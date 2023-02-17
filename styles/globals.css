@@ -114,8 +114,16 @@ a {
 
 .card {
 	@apply mb-5 block rounded-lg border border-gray-200 shadow-md;
+	float: left;
 }
 
 .primary-button {
 	@apply rounded bg-amber-300 py-2 px-4 shadow outline-none hover:bg-amber-400 active:bg-amber-500;
+}
+
+.parent {
+	display: flex;
+	/* height: 100vh; */
+	justify-content: space-around;
+	align-items: center;
 }
