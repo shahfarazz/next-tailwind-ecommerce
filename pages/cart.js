@@ -2,6 +2,7 @@ import Layout from '@/components/Layout';
 import { Store } from '@/utils/Store';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
 
 export default function CartScreen() {
@@ -10,6 +11,11 @@ export default function CartScreen() {
 	const {
 		cart: { cartItems },
 	} = state;
+
+	function removeItemHandler(item) {
+		dispatch({ type: 'CART_REMOVE_1_ITEM', payload: item });
+	}
+
 	return (
 		<Layout title="Shopping cart">
 			<h1 className="mb-4 text-xl">Shopping Cart</h1>
@@ -62,7 +68,12 @@ export default function CartScreen() {
 											{item.price}
 										</td>
 										<td className="p-5 text-center">
-											<button className="btn btn-circle btn-xs">
+											<button
+												className="btn btn-circle btn-xs"
+												onClick={() =>
+													removeItemHandler(item)
+												}
+											>
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
 													className="h-3 w-3"

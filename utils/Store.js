@@ -22,6 +22,22 @@ function reducer(state, action) {
 
 			return { ...state, cart: { ...state.cart, cartItems } };
 		}
+		case 'CART_REMOVE_1_ITEM': {
+			// console.log('Over here and indexToRemove is', state.cart.cartItems);
+			console.log('called by chatgpt');
+
+			const cartItems = state.cart.cartItems.filter(
+				item => item.slug !== action.payload.slug
+			);
+
+			// console.log('Over here and indexToRemove is', indexToRemove);
+
+			// if (indexToRemove !== -1) {
+			// 	cartItems.map(item => );
+			// }
+			// console.log('Over here and cartitems is', cartItems);
+			return { ...state, cart: { ...state.cart, cartItems } };
+		}
 
 		default:
 			return state;
