@@ -4,9 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
+import dynamic from 'next/dynamic';
 
-export default function CartScreen() {
+function CartScreen() {
 	const { state, dispatch } = useContext(Store);
+	const router = useRouter();
 
 	const {
 		cart: { cartItems },
@@ -14,6 +16,11 @@ export default function CartScreen() {
 
 	function removeItemHandler(item) {
 		dispatch({ type: 'CART_REMOVE_1_ITEM', payload: item });
+	}
+
+	function updateCartHandler(item, qty) {
+		const quantity = Number(qty);
+		dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
 	}
 
 	return (
@@ -62,7 +69,28 @@ export default function CartScreen() {
 											</Link>
 										</td>
 										<td className="p-5 text-right">
-											{item.quantity}
+											<select
+												value={item.quantity}
+												onChange={e =>
+													updateCartHandler(
+														item,
+														e.target.value
+													)
+												}
+											>
+												{[
+													...Array(
+														item.countInStock
+													).keys(),
+												].map(x => (
+													<option
+														key={x + 1}
+														value={x + 1}
+													>
+														{x + 1}
+													</option>
+												))}
+											</select>
 										</td>
 										<td className="p-5 text-right">
 											{item.price}
@@ -95,8 +123,36 @@ export default function CartScreen() {
 							</tbody>
 						</table>
 					</div>
+					<div className="card p-5">
+						<ul>
+							<li>
+								<div className="pb-3 text-xl">
+									Subtotal (
+									{cartItems.reduce(
+										(a, c) => a + c.quantity,
+										0
+									)}
+									) : Rs.
+									{cartItems.reduce(
+										(a, c) => a + c.quantity * c.price,
+										0
+									)}
+								</div>
+							</li>
+							<li>
+								<button
+									className="btn bg-yellow-400 text-black w-full"
+									onClick={() => router.push('/shipping')}
+								>
+									Check Out
+								</button>
+							</li>
+						</ul>
+					</div>
 				</div>
 			)}
 		</Layout>
 	);
 }
+
+export default dynamic(() => Promise.resolve(CartScreen), { ssr: false });
