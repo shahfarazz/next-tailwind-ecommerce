@@ -1,28 +1,31 @@
 import Layout from '@/components/Layout';
-import data from '@/utils/data';
+import Product from '@/models/Product';
+// import data from '@/utils/data';
+import db from '@/utils/db';
 import { Store } from '@/utils/Store';
+import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
 
-export default function ProductScreen() {
+export default function ProductScreen(props) {
+	const { product } = props;
 	const { state, dispatch } = useContext(Store);
-	const { query } = useRouter();
 	const router = useRouter();
-	const { slug } = query;
-	const product = data.products.find(x => x.slug === slug);
-
 	if (!product) {
-		return <div>Product not Found</div>;
+		return <Layout title={'Product not found'}>Product not Found</Layout>;
 	}
 
-	function addToCartHandler() {
+	async function addToCartHandler() {
 		const existItem = state.cart.cartItems.find(
 			x => x.slug === product.slug
 		);
 		const quantity = existItem ? existItem.quantity + 1 : 1;
-		if (product.countInStock < quantity) {
+
+		const { data } = await axios.get(`/api/products/${product._id}`);
+
+		if (data.countInStock < quantity) {
 			alert('Sorry, product is Out of Stock.');
 			return;
 		}
@@ -115,4 +118,18 @@ export default function ProductScreen() {
 			</div>
 		</Layout>
 	);
+}
+
+export async function getServerSideProps(context) {
+	const { params } = context;
+	const { slug } = params;
+
+	await db.connect();
+	const product = await Product.findOne({ slug }).lean();
+	await db.disconnect();
+	return {
+		props: {
+			product: product ? db.convertDocToObj(product) : null,
+		},
+	};
 }
