@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
+import { toast } from 'react-toastify';
 
 export default function ProductScreen(props) {
 	const { product } = props;
@@ -26,8 +27,7 @@ export default function ProductScreen(props) {
 		const { data } = await axios.get(`/api/products/${product._id}`);
 
 		if (data.countInStock < quantity) {
-			alert('Sorry, product is Out of Stock.');
-			return;
+			return toast.error('Sorry. Product is out of stock.');
 		}
 		dispatch({
 			type: 'CART_ADD_ITEM',
